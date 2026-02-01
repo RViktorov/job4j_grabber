@@ -10,85 +10,78 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-    public class JdbcStore implements Store {
-        private final Connection connection;
+public class JdbcStore implements Store {
+    private final Connection connection;
 
-        public JdbcStore(Connection connection) {
-            this.connection = connection;
-        }
+    private Post createPost(ResultSet rs) throws SQLException {
+        return new Post(
+                rs.getLong("id"),
+                rs.getString("title"),
+                rs.getString("link"),
+                rs.getString("description"),
+                rs.getLong("time")
+        );
+    }
 
-        @Override
-        public void save(Post post) {
-            String sql = """
+    public JdbcStore(Connection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public void save(Post post) {
+        String sql = """
                 INSERT INTO post (id, title, link, description, time)
                 VALUES (?, ?, ?, ?, ?)
                 ON CONFLICT (link) DO NOTHING
                 """;
 
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                ps.setLong(1, post.getId());
-                ps.setString(2, post.getTitle());
-                ps.setString(3, post.getLink());
-                ps.setString(4, post.getDescription());
-                ps.setLong(5, post.getTime());
-                ps.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException("Error saving post", e);
-            }
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, post.getId());
+            ps.setString(2, post.getTitle());
+            ps.setString(3, post.getLink());
+            ps.setString(4, post.getDescription());
+            ps.setLong(5, post.getTime());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error saving post", e);
         }
+    }
 
 
-        @Override
-        public List<Post> getAll() {
-            List<Post> result = new ArrayList<>();
-            String sql = "SELECT id, title, link, description, time FROM post";
-            try (PreparedStatement ps = connection.prepareStatement(sql);
-                 ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Post post = new Post(
-                            rs.getLong("id"),
-                            rs.getString("title"),
-                            rs.getString("link"),
-                            rs.getString("description"),
-                            rs.getLong("time")
-                    );
-                    result.add(post);
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException("Error reading posts", e);
-            }
-            return result;
+    @Override
+    public List<Post> getAll() {
+        List<Post> result = new ArrayList<>();
+        String sql = "SELECT id, title, link, description, time FROM post";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) result.add(createPost(rs));
+        } catch (SQLException e) {
+            throw new RuntimeException("Error reading posts", e);
         }
+        return result;
+    }
 
 
-        @Override
-        public Optional<Post> findById(Long id) {
+    @Override
+    public Optional<Post> findById(Long id) {
 
-                String sql = """
+        String sql = """
                 SELECT id, title, link, description, time
                 FROM post
                 WHERE id = ?
                 """;
 
-                try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                    ps.setLong(1, id);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (rs.next()) {
-                            return Optional.of(
-                                    new Post(
-                                            rs.getLong("id"),
-                                            rs.getString("title"),
-                                            rs.getString("link"),
-                                            rs.getString("description"),
-                                            rs.getLong("time")
-                                    )
-                            );
-                        }
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException("Error finding post by id", e);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(
+                            createPost(rs));
                 }
-                return Optional.empty();
-
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error finding post by id", e);
         }
+        return Optional.empty();
     }
+}
