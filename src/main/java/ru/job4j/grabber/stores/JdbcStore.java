@@ -47,20 +47,20 @@ public class JdbcStore implements Store {
         }
     }
 
-
     @Override
     public List<Post> getAll() {
         List<Post> result = new ArrayList<>();
         String sql = "SELECT id, title, link, description, time FROM post";
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) result.add(createPost(rs));
+            while (rs.next()) {
+                result.add(createPost(rs));
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Error reading posts", e);
         }
         return result;
     }
-
 
     @Override
     public Optional<Post> findById(Long id) {

@@ -11,12 +11,13 @@ import ru.job4j.grabber.stores.Store;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
 import org.apache.log4j.Logger;
 
 public class Main {
-    private static final Logger log = Logger.getLogger(Main.class);
-    public static void main(String[] args) {
+    private static final Logger LOG = Logger.getLogger(Main.class);
 
+    public static void main(String[] args) {
         var config = new Config();
         config.load("application.properties");
 
@@ -24,8 +25,7 @@ public class Main {
                 config.get("db.url"),
                 config.get("db.username"),
                 config.get("db.password")
-        ))
-        {
+        )) {
             Store store = new JdbcStore(connection);
             var post = new Post(
                     1L,
@@ -44,9 +44,8 @@ public class Main {
                     store);
             Thread.sleep(10000);
             scheduler.close();
-        }
-        catch (SQLException | InterruptedException e) {
-            log.error("When create a connection", e);
+        } catch (SQLException | InterruptedException e) {
+            LOG.error("When create a connection", e);
         }
     }
 }
