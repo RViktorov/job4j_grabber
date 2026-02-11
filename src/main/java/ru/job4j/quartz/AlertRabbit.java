@@ -32,6 +32,7 @@ public class AlertRabbit {
             Trigger trigger = newTrigger()
                     .startNow()
                     .withSchedule(times)
+                    .usingJobData("key", "value") // передаем параметры
                     .build();
 
             scheduler.scheduleJob(job, trigger);
@@ -54,7 +55,6 @@ public class AlertRabbit {
         }
         return properties;
     }
-
 
     public static class Rabbit implements Job {
         @Override
