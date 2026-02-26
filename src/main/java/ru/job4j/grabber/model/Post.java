@@ -17,6 +17,10 @@ public class Post {
         this.time = time;
     }
 
+    public Post() {
+
+    }
+
     public Long getId() {
         return id;
     }
