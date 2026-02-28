@@ -1,0 +1,20 @@
+package ru.job4j.grabber.utils;
+
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class HabrCareerDateTimeParserTest {
+    private final DateTimeParser parser = new HabrCareerDateTimeParser();
+
+    @Test
+    void whenParseValidDateThenReturnLocalDateTime() {
+        String input = "2026-02-28T12:01:00+03:00";
+
+        LocalDateTime result = parser.parse(input);
+        assertEquals(LocalDateTime.of(2026, 2, 28, 15, 1), result);
+    }
+
+}

@@ -3,8 +3,11 @@ package ru.job4j.grabber.service;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import ru.job4j.grabber.model.Post;
+import ru.job4j.grabber.utils.DateTimeParser;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +16,12 @@ public class HabrCareerParse implements Parse { // класс отвечает �
     private static final String SOURCE_LINK = "https://career.habr.com";
     private static final String PREFIX = "/vacancies?page=";
     private static final String SUFFIX = "&q=Java%20developer&type=all";
+
+    private final DateTimeParser dateTimeParser;
+
+    public HabrCareerParse(DateTimeParser dateTimeParser) {
+        this.dateTimeParser = dateTimeParser;
+    }
 
     @Override
     public List<Post> fetch() {
@@ -39,9 +48,13 @@ public class HabrCareerParse implements Parse { // класс отвечает �
                     long created;
                     if (timeElement != null) {
                         String datetime = timeElement.attr("datetime");
-                        created = java.time.OffsetDateTime.parse(datetime)
+                        LocalDateTime localDateTime = dateTimeParser.parse(datetime);
+
+                        created = localDateTime
+                                .atZone(ZoneId.systemDefault()) // указываем зону
                                 .toInstant()
                                 .toEpochMilli();
+
                     } else {
                         created = System.currentTimeMillis();
                     }
