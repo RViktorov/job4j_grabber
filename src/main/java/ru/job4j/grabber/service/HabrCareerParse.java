@@ -54,7 +54,6 @@ public class HabrCareerParse implements Parse { // класс отвечает �
                                 .atZone(ZoneId.systemDefault()) // указываем зону
                                 .toInstant()
                                 .toEpochMilli();
-
                     } else {
                         created = System.currentTimeMillis();
                     }

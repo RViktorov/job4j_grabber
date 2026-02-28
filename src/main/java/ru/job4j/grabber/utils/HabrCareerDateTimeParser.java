@@ -9,4 +9,5 @@ public class HabrCareerDateTimeParser implements DateTimeParser {
     public LocalDateTime parse(String parse) {
         return OffsetDateTime.parse(parse).toLocalDateTime();
     }
+
 }
