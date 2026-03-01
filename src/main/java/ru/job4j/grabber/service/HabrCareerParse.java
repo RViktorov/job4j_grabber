@@ -6,8 +6,7 @@ import ru.job4j.grabber.model.Post;
 import ru.job4j.grabber.utils.DateTimeParser;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,23 +47,18 @@ public class HabrCareerParse implements Parse { // класс отвечает �
                         String description = retrieveDescription(link);
 
                         var timeElement = vacancyDoc.selectFirst("time");
-                        long created;
+                        long seconds;
                         if (timeElement != null) {
                             String datetime = timeElement.attr("datetime");
-                            LocalDateTime localDateTime = dateTimeParser.parse(datetime);
-
-                            created = localDateTime
-                                    .atZone(ZoneId.systemDefault()) // указываем зону
-                                    .toInstant()
-                                    .toEpochMilli();
+                            seconds = dateTimeParser.parse(datetime).toEpochSecond(ZoneOffset.UTC);
                         } else {
-                            created = System.currentTimeMillis();
+                            seconds = System.currentTimeMillis();
                         }
 
                         var post = new Post();
                         post.setTitle(vacancyName);
                         post.setLink(link);
-                        post.setTime(created);
+                        post.setTime(seconds);
                         post.setDescription(description);
                         result.add(post);
                     } catch (IOException e) {
