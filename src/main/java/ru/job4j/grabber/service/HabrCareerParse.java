@@ -44,6 +44,8 @@ public class HabrCareerParse implements Parse { // класс отвечает �
                                 linkElement.attr("href"));
                         // получаем время из вакансии
                         var vacancyDoc = Jsoup.connect(link).get();
+                        // Получаем описание
+                        String description = retrieveDescription(link);
 
                         var timeElement = vacancyDoc.selectFirst("time");
                         long created;
@@ -63,6 +65,7 @@ public class HabrCareerParse implements Parse { // класс отвечает �
                         post.setTitle(vacancyName);
                         post.setLink(link);
                         post.setTime(created);
+                        post.setDescription(description);
                         result.add(post);
                     } catch (IOException e) {
                         LOG.error("Error parsing vacancy: " + row.text(), e);
@@ -73,6 +76,20 @@ public class HabrCareerParse implements Parse { // класс отвечает �
             LOG.error("When load page", e);
         }
         return result;
+    }
+
+    private String retrieveDescription(String link) {
+        try {
+            var vacancyDoc = Jsoup.connect(link).get();  // Получаем  вакансии
+            var descriptionElement = vacancyDoc.selectFirst(".vacancy-description");  // Получаем описания
+
+            if (descriptionElement != null) {
+                return descriptionElement.text();
+            }
+        } catch (IOException e) {
+            LOG.error("Error retrieving description for " + link, e);
+        }
+        return "description not available";
     }
 
 }
