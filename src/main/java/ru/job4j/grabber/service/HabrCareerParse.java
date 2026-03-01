@@ -75,7 +75,7 @@ public class HabrCareerParse implements Parse { // класс отвечает �
     private String retrieveDescription(String link) {
         try {
             var vacancyDoc = Jsoup.connect(link).get();  // Получаем  вакансии
-            var descriptionElement = vacancyDoc.selectFirst(".vacancy-description");  // Получаем описания
+            var descriptionElement = vacancyDoc.selectFirst(".vacancy-show");  // Получаем описания
 
             if (descriptionElement != null) {
                 return descriptionElement.text();
