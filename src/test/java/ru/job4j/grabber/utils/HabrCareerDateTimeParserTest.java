@@ -11,10 +11,10 @@ public class HabrCareerDateTimeParserTest {
 
     @Test
     void whenParseValidDateThenReturnLocalDateTime() {
-        String input = "2026-02-28T15:01:00+03:00";
+        String input = "2026-02-28T15:01:03+03:00";
 
         LocalDateTime result = parser.parse(input);
-        assertEquals(LocalDateTime.of(2026, 2, 28, 15, 1), result);
+        assertEquals(LocalDateTime.of(2026, 2, 28, 15, 1, 3), result);
     }
 
 }
