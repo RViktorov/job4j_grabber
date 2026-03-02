@@ -30,17 +30,22 @@ public class JdbcStore implements Store {
     @Override
     public void save(Post post) {
         String sql = """
-                INSERT INTO post (id, title, link, description, time)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO post (title, link, description, time)
+                VALUES ( ?, ?, ?, ?)
                 ON CONFLICT (link) DO NOTHING
                 """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setLong(1, post.getId());
-            ps.setString(2, post.getTitle());
-            ps.setString(3, post.getLink());
-            ps.setString(4, post.getDescription());
-            ps.setLong(5, post.getTime());
+          //  ps.setLong(1, post.getId());
+            ps.setString(1, post.getTitle());
+            ps.setString(2, post.getLink());
+            ps.setString(3, post.getDescription());
+
+            // если null
+            ps.setLong(4, post.getTime() == null
+                    ? System.currentTimeMillis()
+                    : post.getTime());
+
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error saving post", e);
