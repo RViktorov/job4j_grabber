@@ -17,7 +17,7 @@ public class SchedulerManager implements AutoCloseable {
         try {
             scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
-
+            System.out.println("Scheduler started");
         } catch (SchedulerException se) {
             LOG.error("When init scheduler", se);
         }

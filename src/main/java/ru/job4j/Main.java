@@ -19,18 +19,13 @@ public class Main {
     public static void main(String[] args) {
         var config = new Config();
         config.load("application.properties");
-        try (var connection = DriverManager.getConnection(config.get("db.url"),
-                config.get("db.username"),
-                config.get("db.password"))) {
+        try {
+            var connection = DriverManager.getConnection(
+                    config.get("db.url"),
+                    config.get("db.username"),
+                    config.get("db.password")
+            );
             Store store = new JdbcStore(connection);
-
-            // Добавляем тестовый пост
-            var post = new Post();
-            post.setTitle("Super Java Job");
-            post.setLink("https://java.com");
-            post.setDescription("Test description");
-            post.setTime(System.currentTimeMillis());
-            store.save(post);
 
             // Настраиваем и запускаем планировщик
             var scheduler = new SchedulerManager();
@@ -47,4 +42,5 @@ public class Main {
             LOG.error("When creating a connection", e);
         }
     }
+
 }

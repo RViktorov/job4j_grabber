@@ -29,8 +29,11 @@ public class HabrCareerParse implements Parse { // класс отвечает �
         try {
             for (int pageNumber = 1; pageNumber <= PAGES_TO_PARSE; pageNumber++) {
                 String fullLink = "%s%s%d%s".formatted(SOURCE_LINK, PREFIX, pageNumber, SUFFIX);
-                var connection = Jsoup.connect(fullLink);
-                var document = connection.get();
+
+                var document = Jsoup.connect(fullLink)
+                        .userAgent("Mozilla")
+                        .timeout(5000)
+                        .get();
                 var rows = document.select(".vacancy-card__inner");
                 rows.forEach(row -> {
                     //название и ссылка
@@ -74,7 +77,12 @@ public class HabrCareerParse implements Parse { // класс отвечает �
 
     private String retrieveDescription(String link) {
         try {
-            var vacancyDoc = Jsoup.connect(link).get();  // Получаем  вакансии
+
+            var vacancyDoc = Jsoup.connect(link)  // Получаем  вакансии
+                    .userAgent("Mozilla")
+                    .timeout(5000)
+                    .get();
+
             var descriptionElement = vacancyDoc.selectFirst(".vacancy-show");  // Получаем описания
 
             if (descriptionElement != null) {
